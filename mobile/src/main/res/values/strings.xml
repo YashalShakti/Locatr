@@ -1,4 +1,5 @@
 <resources>
     <string name="app_name">Locatr</string>
     <string name="title_activity_contact_selector">contact_selector</string>
+    <string name="title_activity_message_selector">message_selector</string>
 </resources>

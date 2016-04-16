@@ -9,13 +9,12 @@ import android.view.View;
 
 import com.yashal.locatr.R;
 
-public class contact_selector_activity extends AppCompatActivity {
+public class message_selector extends AppCompatActivity {
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_contact_selector);
-
+        setContentView(R.layout.activity_message_selector);
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
 
@@ -28,4 +27,5 @@ public class contact_selector_activity extends AppCompatActivity {
             }
         });
     }
+
 }

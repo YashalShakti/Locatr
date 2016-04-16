@@ -30,6 +30,10 @@
         <activity
             android:name=".sections.contact_selector_activity"
             android:label="@string/title_activity_contact_selector"
+            android:theme="@style/AppTheme.NoActionBar" />
+        <activity
+            android:name=".sections.message_selector"
+            android:label="@string/title_activity_message_selector"
             android:theme="@style/AppTheme.NoActionBar"></activity>
     </application>
 
