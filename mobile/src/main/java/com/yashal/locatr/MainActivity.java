@@ -14,8 +14,13 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.Toast;
 
+import com.firebase.client.DataSnapshot;
+import com.firebase.client.Firebase;
+import com.firebase.client.FirebaseError;
+import com.firebase.client.ValueEventListener;
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.GoogleApiAvailability;
+import com.yashal.locatr.sections.Message_selector_activity;
 import com.yashal.locatr.services.RegistrationIntentService;
 import com.yashal.locatr.services.SendGcm;
 import com.yashal.locatr.ui.ContactsListActivity;
@@ -32,16 +37,57 @@ public class MainActivity extends AppCompatActivity {
         setContentView(R.layout.activity_home);
 
         Button selectmainbutton = (Button) findViewById(R.id.select_contacts_button);
+        Button sendButton = (Button) findViewById(R.id.send_alert_button);
+        Button selectMessageButton = (Button) findViewById(R.id.select_message_button);
+
         selectmainbutton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 Intent intent = new Intent(MainActivity.this, ContactsListActivity.class);
                 startActivity(intent);
-
             }
         });
-        Intent gcmIntent = new Intent(this, SendGcm.class);
-        startService(gcmIntent);
+
+        selectMessageButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent intent = new Intent(MainActivity.this, Message_selector_activity.class);
+                startActivity(intent);
+            }
+        });
+
+
+        assert sendButton != null;
+        sendButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Firebase.setAndroidContext(MainActivity.this);
+                Firebase myFirebaseRef = new Firebase("https://locatr.firebaseio.com/");
+                myFirebaseRef.addValueEventListener(new ValueEventListener() {
+                    @Override
+                    public void onDataChange(DataSnapshot snapshot) {
+                        Intent gcmIntent = new Intent(MainActivity.this, SendGcm.class);
+                        System.out.println("There are " + snapshot.getChildrenCount() + "posts");
+                        for (DataSnapshot postSnapshot : snapshot.getChildren()) {
+                            String post = postSnapshot.getValue(String.class);
+                            Log.d("firebase", post);
+                            gcmIntent.putExtra("message", post);
+                        }
+                        startService(gcmIntent);
+                    }
+
+                    @Override
+                    public void onCancelled(FirebaseError firebaseError) {
+                        System.out.println("The read failed: " + firebaseError.getMessage());
+                    }
+                });
+            }
+        });
+
+
+        //  myFirebaseRef.child("message").setValue("Do you have data? You'll love Firebase.");
+
+
         mRegistrationBroadcastReceiver = new BroadcastReceiver() {
             @Override
             public void onReceive(Context context, Intent intent) {
