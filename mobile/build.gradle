@@ -6,7 +6,7 @@ android {
 
     defaultConfig {
         applicationId "com.yashal.locatr"
-        minSdkVersion 16
+        minSdkVersion 21
         targetSdkVersion 23
         versionCode 1
         versionName "1.0"
@@ -29,4 +29,5 @@ dependencies {
     compile 'com.google.android.gms:play-services:8.4.0'
     compile 'com.google.android.gms:play-services-gcm:8.3.0'
     compile 'com.android.support:design:23.3.0'
+    compile 'com.firebase:firebase-client-android:2.5.2+'
 }
