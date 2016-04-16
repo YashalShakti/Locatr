@@ -12,6 +12,9 @@
     tools:context="com.yashal.locatr.sections.message_selector"
     tools:showIn="@layout/activity_message_selector">
 
+    <Button
+        android:layout_width="wrap_content"
+        android:layout_height="60dp" />
     <EditText
         android:id="@+id/message_input"
         android:layout_width="match_parent"
