@@ -13,29 +13,28 @@ import com.google.api.server.spi.response.CollectionResponse;
 
 import java.util.List;
 import java.util.logging.Logger;
+
 import javax.inject.Named;
 
 import static com.yashal.locatr.backend.OfyService.ofy;
 
 /**
  * A registration endpoint class we are exposing for a device's GCM registration id on the backend
- *
+ * <p/>
  * For more information, see
  * https://developers.google.com/appengine/docs/java/endpoints/
- *
+ * <p/>
  * NOTE: This endpoint does not use any form of authorization or
  * authentication! If this app is deployed, anyone can access this endpoint! If
  * you'd like to add authentication, take a look at the documentation.
  */
-@Api(
-  name = "registration",
-  version = "v1",
-  namespace = @ApiNamespace(
-    ownerDomain = "backend.locatr.yashal.com",
-    ownerName = "backend.locatr.yashal.com",
-    packagePath=""
-  )
-)
+@Api(name = "register",
+        clientIds = {Ids.WEB_CLIENT_ID,
+                Ids.ANDROID_CLIENT_ID}
+        , audiences = {Ids.ANDROID_AUDIENCE},
+        namespace = @ApiNamespace(
+                ownerDomain = "backend.locatr.yashal.com",
+                ownerName = "backend.locatr.yashal.com", packagePath = ""))
 public class RegistrationEndpoint {
 
     private static final Logger log = Logger.getLogger(RegistrationEndpoint.class.getName());
@@ -47,7 +46,7 @@ public class RegistrationEndpoint {
      */
     @ApiMethod(name = "register")
     public void registerDevice(@Named("regId") String regId) {
-        if(findRecord(regId) != null) {
+        if (findRecord(regId) != null) {
             log.info("Device " + regId + " already registered, skipping register");
             return;
         }
@@ -64,7 +63,7 @@ public class RegistrationEndpoint {
     @ApiMethod(name = "unregister")
     public void unregisterDevice(@Named("regId") String regId) {
         RegistrationRecord record = findRecord(regId);
-        if(record == null) {
+        if (record == null) {
             log.info("Device " + regId + " not registered, skipping unregister");
             return;
         }

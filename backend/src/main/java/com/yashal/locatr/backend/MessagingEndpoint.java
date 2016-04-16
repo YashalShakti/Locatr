@@ -11,6 +11,7 @@ import com.google.android.gcm.server.Message;
 import com.google.android.gcm.server.Result;
 import com.google.android.gcm.server.Sender;
 import com.google.api.server.spi.config.Api;
+import com.google.api.server.spi.config.ApiMethod;
 import com.google.api.server.spi.config.ApiNamespace;
 
 import java.io.IOException;
@@ -50,6 +51,7 @@ public class MessagingEndpoint {
      *
      * @param message The message to send
      */
+    @ApiMethod(name = "send")
     public void sendMessage(@Named("message") String message) throws IOException {
         if(message == null || message.trim().length() == 0) {
             log.warning("Not sending message because it is empty");
