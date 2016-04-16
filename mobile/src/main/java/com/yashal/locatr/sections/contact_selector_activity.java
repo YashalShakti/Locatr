@@ -9,7 +9,7 @@ import android.view.View;
 
 import com.yashal.locatr.R;
 
-public class contact_selector extends AppCompatActivity {
+public class contact_selector_activity extends AppCompatActivity {
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {

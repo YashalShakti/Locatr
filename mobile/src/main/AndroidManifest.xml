@@ -28,7 +28,7 @@
             </intent-filter>
         </activity>
         <activity
-            android:name=".sections.contact_selector"
+            android:name=".sections.contact_selector_activity"
             android:label="@string/title_activity_contact_selector"
             android:theme="@style/AppTheme.NoActionBar"></activity>
     </application>
