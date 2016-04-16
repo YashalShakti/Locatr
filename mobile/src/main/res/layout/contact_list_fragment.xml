@@ -35,4 +35,13 @@
               android:fontFamily="sans-serif-light"
               android:textAppearance="?android:attr/textAppearanceLarge"/>
 
+    <ImageButton
+        android:layout_width="42dp"
+        android:layout_margin="16dp"
+        android:layout_height="42dp"
+        android:src="@drawable/ic_action_add"
+        android:id="@+id/save_contacts"
+        android:layout_gravity="bottom|right"
+        android:background="@color/wallet_holo_blue_light"/>
+
 </FrameLayout>

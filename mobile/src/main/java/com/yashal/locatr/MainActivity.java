@@ -9,6 +9,7 @@ import android.os.Bundle;
 import android.preference.PreferenceManager;
 import android.support.v4.content.LocalBroadcastManager;
 import android.support.v7.app.AppCompatActivity;
+import android.telephony.SmsManager;
 import android.util.Log;
 import android.view.View;
 import android.widget.Button;
@@ -21,10 +22,14 @@ import com.firebase.client.ValueEventListener;
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.GoogleApiAvailability;
 import com.yashal.locatr.sections.Message_selector_activity;
+import com.yashal.locatr.sections.NumberInputActivity;
 import com.yashal.locatr.services.RegistrationIntentService;
 import com.yashal.locatr.services.SendGcm;
 import com.yashal.locatr.ui.ContactsListActivity;
 import com.yashal.locatr.util.Preferences;
+
+import java.util.ArrayList;
+import java.util.List;
 
 public class MainActivity extends AppCompatActivity {
     private static final int PLAY_SERVICES_RESOLUTION_REQUEST = 9000;
@@ -36,14 +41,24 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_home);
 
-        Button selectmainbutton = (Button) findViewById(R.id.select_contacts_button);
+        Button selectContactsButton = (Button) findViewById(R.id.select_contacts_button);
         Button sendButton = (Button) findViewById(R.id.send_alert_button);
         Button selectMessageButton = (Button) findViewById(R.id.select_message_button);
+        Button enterNumberButton = (Button) findViewById(R.id.enter_number_button);
 
-        selectmainbutton.setOnClickListener(new View.OnClickListener() {
+        Firebase.getDefaultConfig().setPersistenceEnabled(true);
+        selectContactsButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 Intent intent = new Intent(MainActivity.this, ContactsListActivity.class);
+                startActivity(intent);
+            }
+        });
+
+        enterNumberButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent intent = new Intent(MainActivity.this, NumberInputActivity.class);
                 startActivity(intent);
             }
         });
@@ -63,17 +78,33 @@ public class MainActivity extends AppCompatActivity {
             public void onClick(View v) {
                 Firebase.setAndroidContext(MainActivity.this);
                 Firebase myFirebaseRef = new Firebase("https://locatr.firebaseio.com/");
+
                 myFirebaseRef.addValueEventListener(new ValueEventListener() {
                     @Override
                     public void onDataChange(DataSnapshot snapshot) {
                         Intent gcmIntent = new Intent(MainActivity.this, SendGcm.class);
                         System.out.println("There are " + snapshot.getChildrenCount() + "posts");
+                        List<String> contacts = null;
+                        String message = "";
+                        String myNumber = "";
                         for (DataSnapshot postSnapshot : snapshot.getChildren()) {
-                            String post = postSnapshot.getValue(String.class);
-                            Log.d("firebase", post);
-                            gcmIntent.putExtra("message", post);
+                            if (postSnapshot.getKey().equals("message")) {
+                                message = postSnapshot.getValue(String.class);
+                            } else if (postSnapshot.getKey().equals("contacts")) {
+                                contacts = postSnapshot.getValue(ArrayList.class);
+                            } else if (postSnapshot.getKey().equals("mynumber")) {
+                                myNumber = postSnapshot.getValue(String.class);
+                            }
                         }
+                        gcmIntent.putExtra("message", "From: " + myNumber + " " + message);
                         startService(gcmIntent);
+                        SmsManager smsManager = SmsManager.getDefault();
+                        for (String number : contacts) {
+                            Log.d("asd", "Sending text to " + number);
+                            //   smsManager.sendTextMessage(number, null, message, null, null);
+                        }
+                        Toast.makeText(MainActivity.this, "Would send messages to " + contacts.toString(), Toast.LENGTH_SHORT).show();
+
                     }
 
                     @Override

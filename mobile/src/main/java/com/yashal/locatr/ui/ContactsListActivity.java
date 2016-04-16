@@ -21,10 +21,17 @@ import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
 import android.support.v4.app.FragmentActivity;
+import android.support.v4.content.Loader;
+import android.util.Log;
+import android.view.View;
 
+import com.firebase.client.Firebase;
 import com.yashal.locatr.BuildConfig;
 import com.yashal.locatr.R;
 import com.yashal.locatr.util.Utils;
+
+import java.util.ArrayList;
+import java.util.List;
 
 
 /**
@@ -46,6 +53,7 @@ public class ContactsListActivity extends FragmentActivity implements
     // search results in a separate instance of the activity rather than loading results in-line
     // as the query is typed.
     private boolean isSearchResultView = false;
+    private List<String> mContactList;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -53,7 +61,7 @@ public class ContactsListActivity extends FragmentActivity implements
             Utils.enableStrictMode();
         }
         super.onCreate(savedInstanceState);
-
+        mContactList = new ArrayList<>();
         // Set main content view. On smaller screen devices this is a single pane view with one
         // fragment. One larger screen devices this is a two pane view with two fragments.
         setContentView(R.layout.activity_main);
@@ -89,26 +97,36 @@ public class ContactsListActivity extends FragmentActivity implements
             mContactDetailFragment = (ContactDetailFragment)
                     getSupportFragmentManager().findFragmentById(R.id.contact_detail);
         }
+
+        findViewById(R.id.save_contacts).setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Firebase.setAndroidContext(ContactsListActivity.this);
+                Firebase myFirebaseRef = new Firebase("https://locatr.firebaseio.com/");
+                myFirebaseRef.child("contacts").setValue(mContactList);
+            }
+        });
     }
 
     /**
      * This interface callback lets the main contacts list fragment notify
      * this activity that a contact has been selected.
      *
-     * @param contactUri The contact Uri to the selected contact.
      */
     @Override
-    public void onContactSelected(Uri contactUri) {
-        if (isTwoPaneLayout && mContactDetailFragment != null) {
+    public void onContactSelected(String number) {
+        /*if (isTwoPaneLayout && mContactDetailFragment != null) {
             // If two pane layout then update the detail fragment to show the selected contact
             mContactDetailFragment.setContact(contactUri);
         } else {
             // Otherwise single pane layout, start a new ContactDetailActivity with
             // the contact Uri
-            Intent intent = new Intent(this, ContactDetailActivity.class);
+           Intent intent = new Intent(this, ContactDetailActivity.class);
             intent.setData(contactUri);
             startActivity(intent);
-        }
+        }*/
+        Log.d("asd",number);
+        mContactList.add(number.replace(" ",""));
     }
 
     /**

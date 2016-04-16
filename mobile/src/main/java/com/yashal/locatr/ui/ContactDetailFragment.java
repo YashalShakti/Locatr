@@ -27,6 +27,7 @@ import android.graphics.Bitmap;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
+import android.provider.ContactsContract;
 import android.provider.ContactsContract.CommonDataKinds.StructuredPostal;
 import android.provider.ContactsContract.Contacts;
 import android.provider.ContactsContract.Contacts.Photo;
@@ -316,6 +317,8 @@ public class ContactDetailFragment extends Fragment implements
 
     @Override
     public Loader<Cursor> onCreateLoader(int id, Bundle args) {
+        ContentResolver cr = getContext().getContentResolver(); //Activity/Application android.content.Context
+
         switch (id) {
             // Two main queries to load the required information
             case ContactDetailQuery.QUERY_ID:
@@ -650,6 +653,7 @@ public class ContactDetailFragment extends Fragment implements
         final static String[] PROJECTION = {
                 Contacts._ID,
                 Utils.hasHoneycomb() ? Contacts.DISPLAY_NAME_PRIMARY : Contacts.DISPLAY_NAME,
+
         };
 
         // The query column numbers which map to each value in the projection

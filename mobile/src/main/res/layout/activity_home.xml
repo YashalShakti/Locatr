@@ -10,11 +10,23 @@
     tools:context="com.yashal.locatr.MainActivity">
 
     <Button
-        android:id="@+id/select_contacts_button"
+        android:id="@+id/enter_number_button"
         android:layout_width="wrap_content"
         android:layout_height="34dp"
         android:layout_centerHorizontal="true"
         android:layout_centerVertical="true"
+        android:background="#666"
+        android:padding="8dp"
+        android:layout_margin="16dp"
+        android:text="Enter number" />
+
+    <Button
+        android:id="@+id/select_contacts_button"
+        android:layout_width="wrap_content"
+        android:layout_height="34dp"
+        android:layout_margin="16dp"
+        android:layout_centerHorizontal="true"
+        android:layout_below="@+id/enter_number_button"
         android:background="#666"
         android:padding="8dp"
         android:text="Select contacts" />
@@ -25,7 +37,6 @@
         android:layout_height="34dp"
         android:layout_below="@+id/select_contacts_button"
         android:layout_centerHorizontal="true"
-        android:layout_centerVertical="true"
         android:layout_margin="16dp"
         android:background="#666"
         android:padding="8dp"

@@ -28,6 +28,7 @@ import android.graphics.Bitmap;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
+import android.provider.ContactsContract;
 import android.provider.ContactsContract.Contacts;
 import android.provider.ContactsContract.Contacts.Photo;
 import android.support.v4.app.ListFragment;
@@ -98,6 +99,8 @@ public class ContactsListFragment extends ListFragment implements
     // OS versions as search results are shown in-line via Action Bar search from honeycomb onward
     private boolean mIsSearchResultView = false;
 
+    private Context mContext;
+
     /**
      * Fragments require an empty constructor.
      */
@@ -125,7 +128,7 @@ public class ContactsListFragment extends ListFragment implements
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-
+        mContext = this.getContext();
         // Check if this fragment is part of a two-pane set up or a single pane by reading a
         // boolean from the application resource directories. This lets allows us to easily specify
         // which screen sizes should use a two-pane layout by setting this boolean in the
@@ -249,6 +252,7 @@ public class ContactsListFragment extends ListFragment implements
     @Override
     public void onItemClick(AdapterView<?> parent, View v, int position, long id) {
         // Gets the Cursor object currently bound to the ListView
+
         final Cursor cursor = mAdapter.getCursor();
 
         // Moves to the Cursor row corresponding to the ListView item that was clicked
@@ -263,7 +267,28 @@ public class ContactsListFragment extends ListFragment implements
         // parent activity loads a ContactDetailFragment that displays the details for the selected
         // contact. In a single-pane layout, the parent activity starts a new activity that
         // displays contact details in its own Fragment.
-        mOnContactSelectedListener.onContactSelected(uri);
+
+
+        String contactNumber="";
+
+        Cursor cursorPhone = mContext.getContentResolver().query(ContactsContract.CommonDataKinds.Phone.CONTENT_URI,
+                new String[]{ContactsContract.CommonDataKinds.Phone.NUMBER},
+
+                ContactsContract.CommonDataKinds.Phone.CONTACT_ID + " = ? AND " +
+                        ContactsContract.CommonDataKinds.Phone.TYPE + " = " +
+                        ContactsContract.CommonDataKinds.Phone.TYPE_MOBILE,
+
+                new String[]{cursor.getString(ContactsQuery.ID)},
+                null);
+
+        if (cursorPhone.moveToFirst()) {
+            contactNumber = cursorPhone.getString(cursorPhone.getColumnIndex(ContactsContract.CommonDataKinds.Phone.NUMBER));
+        }
+
+        cursorPhone.close();
+
+
+        mOnContactSelectedListener.onContactSelected(contactNumber);
 
         // If two-pane layout sets the selected item to checked so it remains highlighted. In a
         // single-pane layout a new activity is started so this is not needed.
@@ -474,7 +499,6 @@ public class ContactsListFragment extends ListFragment implements
         // This swaps the new cursor into the adapter.
         if (loader.getId() == ContactsQuery.QUERY_ID) {
             mAdapter.swapCursor(data);
-
             // If this is a two-pane layout and there is a search query then
             // there is some additional work to do around default selected
             // search item.
@@ -487,7 +511,7 @@ public class ContactsListFragment extends ListFragment implements
                     // contact's ID to the Contacts table content Uri
                     final Uri uri = Uri.withAppendedPath(
                             Contacts.CONTENT_URI, String.valueOf(data.getLong(ContactsQuery.ID)));
-                    mOnContactSelectedListener.onContactSelected(uri);
+                    mOnContactSelectedListener.onContactSelected("");
                     getListView().setItemChecked(mPreviouslySelectedSearchItem, true);
                 } else {
                     // No results, clear selection.
@@ -749,6 +773,7 @@ public class ContactsListFragment extends ListFragment implements
             // containing the contact's details and icons for the built-in apps that can handle
             // each detail type.
 
+
             // Generates the contact lookup Uri
             final Uri contactUri = Contacts.getLookupUri(
                     cursor.getLong(ContactsQuery.ID),
@@ -835,9 +860,8 @@ public class ContactsListFragment extends ListFragment implements
     public interface OnContactsInteractionListener {
         /**
          * Called when a contact is selected from the ListView.
-         * @param contactUri The contact Uri.
          */
-        public void onContactSelected(Uri contactUri);
+        public void onContactSelected(String number);
 
         /**
          * Called when the ListView selection is cleared like when
